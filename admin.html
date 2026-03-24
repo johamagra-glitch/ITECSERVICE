@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Soporte - La Elección</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 1.8em;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 40px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            text-align: center;
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .filters {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filters label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .filters select, .filters input {
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.95em;
+        }
+
+        .btn-filter {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .btn-filter:hover {
+            background: #5568d3;
+        }
+
+        .tickets-table {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f8f9fa;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #e0e0e0;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.95em;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .ticket-id {
+            font-weight: bold;
+            color: #667eea;
+            font-family: monospace;
+            font-size: 1.1em;
+        }
+
+        .priority {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .priority-alta {
+            background: #fee;
+            color: #c33;
+        }
+
+        .priority-media {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .priority-baja {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .status-pendiente {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-proceso {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .status-resuelto {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .btn-action {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+            margin-right: 5px;
+            transition: all 0.2s;
+        }
+
+        .btn-view {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-view:hover {
+            background: #5568d3;
+        }
+
+        .btn-resolve {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-resolve:hover {
+            background: #218838;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 15px;
+            padding: 30px;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .modal-header h2 {
+            color: #333;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .detail-row {
+            margin-bottom: 15px;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            color: #333;
+            font-size: 1em;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .description-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            min-height: 100px;
+            margin-top: 5px;
+        }
+
+        .no-tickets {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .no-tickets-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .export-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-bottom: 20px;
+            float: right;
+        }
+
+        .export-btn:hover {
+            background: #218838;
+        }
+
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔧 Panel de Soporte Técnico</h1>
+        <p>La Elección - Sistema de Gestión de Tickets</p>
+    </div>
+
+    <div class="container">
+        <div class="stats" id="statsContainer">
+            <div class="stat-card">
+                <div class="stat-number" id="totalTickets">0</div>
+                <div class="stat-label">Total Tickets</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="pendingTickets">0</div>
+                <div class="stat-label">Pendientes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="inProgressTickets">0</div>
+                <div class="stat-label">En Proceso</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="resolvedTickets">0</div>
+                <div class="stat-label">Resueltos</div>
+            </div>
+        </div>
+
+        <div class="clearfix">
+            <button class="export-btn" onclick="exportToExcel()">📊 Exportar a Excel</button>
+        </div>
+
+        <div class="filters">
+            <label>Filtrar por:</label>
+            <select id="filterStatus" onchange="loadTickets()">
+                <option value="todos">Todos los estados</option>
+                <option value="Pendiente">Pendiente</option>
+                <option value="En proceso">En proceso</option>
+                <option value="Resuelto">Resuelto</option>
+            </select>
+
+            <select id="filterPriority" onchange="loadTickets()">
+                <option value="todas">Todas las prioridades</option>
+                <option value="alta">Alta</option>
+                <option value="media">Media</option>
+                <option value="baja">Baja</option>
+            </select>
+
+            <input type="text" id="searchTicket" placeholder="Buscar ticket..." onkeyup="loadTickets()">
+            
+            <button class="btn-filter" onclick="loadTickets()">🔄 Actualizar</button>
+        </div>
+
+        <div class="tickets-table">
+            <table id="ticketsTable">
+                <thead>
+                    <tr>
+                        <th>Ticket</th>
+                        <th>Fecha</th>
+                        <th>Solicitante</th>
+                        <th>Departamento</th>
+                        <th>Tipo</th>
+                        <th>Prioridad</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="ticketsBody">
+                    <!-- Tickets se cargan aquí -->
+                </tbody>
+            </table>
+            <div id="noTickets" class="no-tickets" style="display: none;">
+                <div class="no-tickets-icon">📭</div>
+                <h3>No hay tickets registrados</h3>
+                <p>Los tickets aparecerán aquí cuando los usuarios envíen solicitudes</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de detalle -->
+    <div id="detailModal" class="modal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2>📋 Detalle del Ticket</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="modalBody">
+                <!-- Contenido dinámico -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Cargar tickets al iniciar
+        window.onload = function() {
+            loadTickets();
+            updateStats();
+        };
+
+        // Actualizar estadísticas
+        function updateStats() {
+            const tickets = JSON.parse(localStorage.getItem('tickets') || '[]');
+            
+            document.getElementById('totalTickets').textContent = tickets.length;
+            document.getElementById('pendingTickets').textContent = 
+                tickets.filter(t => t.estado === 'Pendiente').length;
+            document.getElementById('inProgressTickets').textContent = 
+                tickets.filter(t => t.estado === 'En proceso').length;
+            document.getElementById('resolvedTickets').textContent = 
+                tickets.filter(t => t.estado === 'Resuelto').length;
+        }
+
+        // Cargar tickets en la tabla
+        function loadTickets() {
+            const tickets = JSON.parse(localStorage.getItem('tickets') || '[]');
+            const tbody = document.getElementById('ticketsBody');
+            const noTickets = document.getElementById('noTickets');
+            const table = document.getElementById('ticketsTable');
+            
+            const filterStatus = document.getElementById('filterStatus').value;
+            const filterPriority = document.getElementById('filterPriority').value;
+            const searchText = document.getElementById('searchTicket').value.toLowerCase();
+
+            // Ordenar por fecha (más reciente primero)
+            tickets.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+
+            // Filtrar
+            const filteredTickets = tickets.filter(ticket => {
+                const matchStatus = filterStatus === 'todos' || ticket.estado === filterStatus;
+                const matchPriority = filterPriority === 'todas' || ticket.prioridad === filterPriority;
+                const matchSearch = ticket.ticket.toLowerCase().includes(searchText) || 
+                                  ticket.nombre.toLowerCase().includes(searchText) ||
+                                  ticket.asunto.toLowerCase().includes(searchText);
+                return matchStatus && matchPriority && matchSearch;
+            });
+
+            if (filteredTickets.length === 0) {
+                tbody.innerHTML = '';
+                noTickets.style.display = 'block';
+                table.style.display = 'none';
+                return;
+            }
+
+            noTickets.style.display = 'none';
+            table.style.display = 'table';
+
+            tbody.innerHTML = filteredTickets.map(ticket => `
+                <tr>
+                    <td><span class="ticket-id">${ticket.ticket}</span></td>
+                    <td>${ticket.fecha}</td>
+                    <td><strong>${ticket.nombre}</strong><br><small>${ticket.email}</small></td>
+                    <td>${formatDepartment(ticket.departamento)}</td>
+                    <td>${formatType(ticket.tipo)}</td>
+                    <td><span class="priority priority-${ticket.prioridad}">${ticket.prioridad}</span></td>
+                    <td><span class="status status-${ticket.estado.toLowerCase().replace(' ', '-')}">${ticket.estado}</span></td>
+                    <td>
+                        <button class="btn-action btn-view" onclick="viewTicket('${ticket.ticket}')">👁️ Ver</button>
+                        ${ticket.estado !== 'Resuelto' ? 
+                            `<button class="btn-action btn-resolve" onclick="resolveTicket('${ticket.ticket}')">✓ Resolver</button>` : 
+                            ''}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Ver detalle de ticket
+        function viewTicket(ticketId) {
+            const tickets = JSON.parse(localStorage.getItem('tickets') || '[]');
+            const ticket = tickets.find(t => t.ticket === ticketId);
+            
+            if (!ticket) return;
+
+            const modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = `
+                <div class="detail-row">
+                    <div class="detail-label">Número de Ticket</div>
+                    <div class="detail-value" style="font-size: 1.2em; color: #667eea;">${ticket.ticket}</div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">Estado</div>
+                    <div class="detail-value">
+                        <span class="status status-${ticket.estado.toLowerCase().replace(' ', '-')}">${ticket.estado}</span>
+                        ${ticket.estado !== 'Resuelto' ? 
+                            `<button class="btn-action btn-resolve" onclick="resolveTicket('${ticket.ticket}'); closeModal();" style="margin-left: 10px;">Marcar como Resuelto</button>` : 
+                            ''}
+                    </div>
+                </div>
+
+                <div class="detail-row">
+                    <div class="detail-label">Fecha de solicitud</div>
+                    <div class="detail-value">${ticket.fecha}</div>
+                </div>
+
+                <div class="detail-row">
+                    <div class="detail-label">Solicitante</div>
+                    <div class="detail-value">
+                        <strong>${ticket.nombre}</strong><br>
+                        📧 ${ticket.email}<br>
+                        ${ticket.telefono ? `📱 ${ticket.telefono}` : ''}
+                    </div>
+                </div>
+
+                <div class="detail-row">
+                    <div class="detail-label">Departamento</div>
+                    <div class="detail-value">${formatDepartment(ticket.departamento)}</div>
+                </div>
+
+                <div class="detail-row">
+                    <div class="detail-label">Tipo de solicitud</div>
+                    <div class="detail-value">${formatType(ticket.tipo)}</div>
+                </div>
+
+                <div class="detail-row">
+                    <div class="detail-label">Prioridad</div>
+                    <div class="detail-value"><span class="priority priority-${ticket.prioridad}">${ticket.prioridad.toUpperCase()}</span></div>
+                </div>
+
+                <div class="detail-row">
+                    <div class="detail-label">Asunto</div>
+                    <div class="detail-value" style="font-weight: 600;">${ticket.asunto}</div>
+                </div>
+
+                <div class="detail-row">
+                    <div class="detail-label">Descripción del problema</div>
+                    <div class="description-box">${ticket.descripcion.replace(/\n/g, '<br>')}</div>
+                </div>
+
+                <div class="detail-row" style="margin-top: 20px;">
+                    <button class="btn-action btn-view" onclick="changeStatus('${ticket.ticket}', 'En proceso')">🔄 Marcar En Proceso</button>
+                    <button class="btn-action btn-resolve" onclick="changeStatus('${ticket.ticket}', 'Resuelto')">✓ Marcar Resuelto</button>
+                </div>
+            `;
+
+            document.getElementById('detailModal').style.display = 'flex';
+        }
+
+        // Cambiar estado de ticket
+        function changeStatus(ticketId, newStatus) {
+            let tickets = JSON.parse(localStorage.getItem('tickets') || '[]');
+            const ticketIndex = tickets.findIndex(t => t.ticket === ticketId);
+            
+            if (ticketIndex !== -1) {
+                tickets[ticketIndex].estado = newStatus;
+                tickets[ticketIndex].fechaActualizacion = new Date().toLocaleString('es-CO');
+                localStorage.setItem('tickets', JSON.stringify(tickets));
+                loadTickets();
+                updateStats();
+                closeModal();
+                
+                // Mostrar notificación
+                alert(`Ticket ${ticketId} marcado como: ${newStatus}`);
+            }
+        }
+
+        // Resolver ticket (acceso rápido desde tabla)
+        function resolveTicket(ticketId) {
+            if (confirm(`¿Confirmar que el ticket ${ticketId} ha sido resuelto?`)) {
+                changeStatus(ticketId, 'Resuelto');
+            }
+        }
+
+        // Cerrar modal
+        function closeModal(event) {
+            if (!event || event.target.id === 'detailModal') {
+                document.getElementById('detailModal').style.display = 'none';
+            }
+        }
+
+        // Formatear departamento
+        function formatDepartment(dept) {
+            const departments = {
+                'cocina': 'Cocina/Producción',
+                'caja': 'Caja/Punto de Venta',
+                'administracion': 'Administración',
+                'ventas': 'Ventas/Atención',
+                'almacen': 'Almacén/Inventario',
+                'direccion': 'Dirección/Gerencia',
+                'otro': 'Otro'
+            };
+            return departments[dept] || dept;
+        }
+
+        // Formatear tipo
+        function formatType(type) {
+            const types = {
+                'hardware': '🖥️ Hardware',
+                'software': '💿 Software',
+                'red': '🌐 Red/Internet',
+                'impresora': '🖨️ Impresora',
+                'correo': '📧 Correo',
+                'acceso': '🔐 Accesos',
+                'capacitacion': '📚 Capacitación',
+                'otro': '❓ Otro'
+            };
+            return types[type] || type;
+        }
+
+        // Exportar a Excel (CSV)
+        function exportToExcel() {
+            const tickets = JSON.parse(localStorage.getItem('tickets') || '[]');
+            
+            if (tickets.length === 0) {
+                alert('No hay tickets para exportar');
+                return;
+            }
+
+            // Crear CSV
+            const headers = ['Ticket', 'Fecha', 'Nombre', 'Email', 'Teléfono', 'Departamento', 'Tipo', 'Prioridad', 'Asunto', 'Descripción', 'Estado'];
+            const csvContent = [
+                headers.join(';'),
+                ...tickets.map(t => [
+                    t.ticket,
+                    t.fecha,
+                    t.nombre,
+                    t.email,
+                    t.telefono || '',
+                    formatDepartment(t.departamento),
+                    formatType(t.tipo),
+                    t.prioridad,
+                    `"${t.asunto.replace(/"/g, '""')}"`,
+                    `"${t.descripcion.replace(/"/g, '""')}"`,
+                    t.estado
+                ].join(';'))
+            ].join('\n');
+
+            // Descargar archivo
+            const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `tickets_soporte_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Datos de ejemplo (para pruebas)
+        function addSampleData() {
+            const sampleTickets = [
+                {
+                    ticket: 'TKT-240325-001',
+                    fecha: '25/03/2024 10:30:00',
+                    nombre: 'María González',
+                    email: 'maria@laeleccion.com',
+                    departamento: 'caja',
+                    tipo: 'hardware',
+                    prioridad: 'alta',
+                    asunto: 'No enciende computadora de caja 1',
+                    descripcion: 'La computadora no enciende desde esta mañana. Se queda en pantalla negra.',
+                    telefono: '3001234567',
+                    estado: 'Pendiente'
+                },
+                {
+                    ticket: 'TKT-240324-045',
+                    fecha: '24/03/2024 14:15:00',
+                    nombre: 'Carlos Ruiz',
+                    email: 'carlos@laeleccion.com',
+                    departamento: 'cocina',
+                    tipo: 'software',
+                    prioridad: 'media',
+                    asunto: 'Sistema de pedidos muy lento',
+                    descripcion: 'El sistema se demora mucho en cargar los pedidos, afecta el servicio.',
+                    telefono: '3109876543',
+                    estado: 'En proceso'
+                }
+            ];
+
+            localStorage.setItem('tickets', JSON.stringify(sampleTickets));
+            loadTickets();
+            updateStats();
+            alert('Datos de ejemplo cargados');
+        }
+    </script>
+</body>
+</html>

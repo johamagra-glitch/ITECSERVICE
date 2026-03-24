@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soporte Técnico - La Elección</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .logo p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .priority-high { color: #e74c3c; }
+        .priority-medium { color: #f39c12; }
+        .priority-low { color: #27ae60; }
+
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .success-message {
+            display: none;
+            background: #d4edda;
+            color: #155724;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .ticket-number {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+            margin-top: 10px;
+        }
+
+        .required {
+            color: #e74c3c;
+        }
+
+        .info-text {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1>🍔 La Elección</h1>
+            <p>Soporte Técnico - Mesa de Ayuda</p>
+        </div>
+
+        <form id="supportForm">
+            <div class="form-group">
+                <label for="nombre">Nombre completo <span class="required">*</span></label>
+                <input type="text" id="nombre" name="nombre" required placeholder="Ej: Juan Pérez">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Correo electrónico <span class="required">*</span></label>
+                <input type="email" id="email" name="email" required placeholder="ejemplo@laeleccion.com">
+            </div>
+
+            <div class="form-group">
+                <label for="departamento">Área/Departamento <span class="required">*</span></label>
+                <select id="departamento" name="departamento" required>
+                    <option value="">Seleccione...</option>
+                    <option value="cocina">Cocina/Producción</option>
+                    <option value="caja">Caja/Punto de Venta</option>
+                    <option value="administracion">Administración</option>
+                    <option value="ventas">Ventas/Atención</option>
+                    <option value="almacen">Almacén/Inventario</option>
+                    <option value="direccion">Dirección/Gerencia</option>
+                    <option value="otro">Otro</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="tipo">Tipo de solicitud <span class="required">*</span></label>
+                <select id="tipo" name="tipo" required>
+                    <option value="">Seleccione...</option>
+                    <option value="hardware">🖥️ Problema de equipo (Hardware)</option>
+                    <option value="software">💿 Problema de programa (Software)</option>
+                    <option value="red">🌐 Problema de internet/Red</option>
+                    <option value="impresora">🖨️ Problema con impresora</option>
+                    <option value="correo">📧 Problema con correo</option>
+                    <option value="acceso">🔐 Solicitud de acceso/Permisos</option>
+                    <option value="capacitacion">📚 Capacitación</option>
+                    <option value="otro">❓ Otro</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="prioridad">Nivel de prioridad <span class="required">*</span></label>
+                <select id="prioridad" name="prioridad" required>
+                    <option value="">Seleccione...</option>
+                    <option value="alta" class="priority-high">🔴 Alta - No puedo trabajar</option>
+                    <option value="media" class="priority-medium">🟡 Media - Afecta mi trabajo</option>
+                    <option value="baja" class="priority-low">🟢 Baja - Mejora o solicitud</option>
+                </select>
+                <p class="info-text">Alta: Sistema caído, no puedo facturar. Media: Lentitud, errores. Baja: Capacitaciones, mejoras.</p>
+            </div>
+
+            <div class="form-group">
+                <label for="asunto">Asunto <span class="required">*</span></label>
+                <input type="text" id="asunto" name="asunto" required placeholder="Ej: No enciende la computadora de caja">
+            </div>
+
+            <div class="form-group">
+                <label for="descripcion">Descripción detallada <span class="required">*</span></label>
+                <textarea id="descripcion" name="descripcion" required placeholder="Describa el problema con el mayor detalle posible:
+- ¿Qué estaba haciendo cuando ocurrió?
+- ¿Qué mensaje de error aparece?
+- ¿Ya intentó reiniciar el equipo?"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="telefono">Teléfono de contacto (opcional)</label>
+                <input type="tel" id="telefono" name="telefono" placeholder="Ej: 300 123 4567">
+            </div>
+
+            <button type="submit" class="btn-submit">📨 Enviar Solicitud</button>
+        </form>
+
+        <div id="successMessage" class="success-message">
+            <h3>✅ Solicitud enviada correctamente</h3>
+            <p>Su número de ticket es:</p>
+            <div class="ticket-number" id="ticketNumber">TKT-001</div>
+            <p style="margin-top: 15px;">Guarde este número para seguimiento. Le contactaremos pronto.</p>
+        </div>
+    </div>
+
+    <script>
+        // Generar número de ticket único
+        function generateTicketNumber() {
+            const date = new Date();
+            const year = date.getFullYear().toString().slice(-2);
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+            return `TKT-${year}${month}${day}-${random}`;
+        }
+
+        // Manejar envío del formulario
+        document.getElementById('supportForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Obtener datos del formulario
+            const formData = {
+                ticket: generateTicketNumber(),
+                fecha: new Date().toLocaleString('es-CO'),
+                nombre: document.getElementById('nombre').value,
+                email: document.getElementById('email').value,
+                departamento: document.getElementById('departamento').value,
+                tipo: document.getElementById('tipo').value,
+                prioridad: document.getElementById('prioridad').value,
+                asunto: document.getElementById('asunto').value,
+                descripcion: document.getElementById('descripcion').value,
+                telefono: document.getElementById('telefono').value,
+                estado: 'Pendiente'
+            };
+
+            // Guardar en localStorage (simulando base de datos)
+            let tickets = JSON.parse(localStorage.getItem('tickets') || '[]');
+            tickets.push(formData);
+            localStorage.setItem('tickets', JSON.stringify(tickets));
+
+            // Mostrar mensaje de éxito
+            document.getElementById('ticketNumber').textContent = formData.ticket;
+            document.getElementById('supportForm').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'block';
+
+            // Enviar notificación por correo (simulado)
+            console.log('Nueva solicitud:', formData);
+            
+            // Aquí iría la integración con EmailJS o servidor
+            sendEmailNotification(formData);
+        });
+
+        // Función simulada de envío de correo
+        function sendEmailNotification(data) {
+            // En producción, usar EmailJS, Formspree, o backend
+            console.log(`Enviando notificación para ticket ${data.ticket} a soporte@laeleccion.com`);
+        }
+    </script>
+</body>
+</html>
